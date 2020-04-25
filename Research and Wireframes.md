@@ -15,4 +15,4 @@ Features which would prove essential to the user on the front end aspect of the 
 # Initial Wireframe
 
 This wireframe contains annotations which link up with the above list of essential features.
-[!wireframe]()
+![wireframe](wireframe.jpg)
