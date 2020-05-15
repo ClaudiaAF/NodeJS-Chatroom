@@ -1,0 +1,19 @@
+{
+  "name": "chatroom",
+  "version": "1.0.0",
+  "description": "chatroom application using nodejs and socket.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClaudiaAF/NodeJS-Chatroom.git"
+  },
+  "author": "Claudia Ferreira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ClaudiaAF/NodeJS-Chatroom/issues"
+  },
+  "homepage": "https://github.com/ClaudiaAF/NodeJS-Chatroom#readme"
+}
