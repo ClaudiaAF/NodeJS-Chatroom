@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ClaudiaAF/NodeJS-Chatroom/issues"
   },
-  "homepage": "https://github.com/ClaudiaAF/NodeJS-Chatroom#readme"
+  "homepage": "https://github.com/ClaudiaAF/NodeJS-Chatroom#readme",
+  "dependencies": {
+    "es6-template-strings": "^2.0.1"
+  }
 }
