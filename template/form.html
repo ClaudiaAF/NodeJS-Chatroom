@@ -15,32 +15,38 @@
       <div class="accordion">
         <div class="item">
           <div class="header">
-            <a href="#"></a><h3>ChatRooms</h3></a>
+            <a href="#"></a><h3 style="margin-left: 4%;">ChatRooms</h3></a>
            
           </div>
           <div class="content">
+            <ul>
            <a href="#"><p style="color: #fff;">Let's taco 'bout it</p></a>
-           <a href="#"><p style="color: #fff;">Lettuce be friends</p></a>
+           <a href="https://www.google.com/search?q=lettuce&oq=lettuce&aqs=chrome..69i57j46j0l2j46j0l3.2855j0j7&sourceid=chrome&ie=UTF-8" target="blank"><p style="color: #fff;">Lettuce be friends</p></a>
            <a href="#"><p style="color: #fff;">Butter half</p></a>
+          </ul>
           </div>
         </div>
         <a href="#"><div class="underline"></div></a>
          <div class="item">
           <div class="header">
-            <a href="#"></a><h3>Friends</h3></a>
+            <a href="#"></a><h3 style="margin-left: 9%;">Friends</h3></a>
             
           </div>
           <div class="content">
-            <a href="#"><p style="color: #fff;">HarkerJ</p></a>
+            <ul>
+            <li style ="margin-left: 16%;">Online</li>
+            <br />
+            <li><a href="#"><p style="color: #fff;">HarkerJ</p></a></li>
             <a href="#"><p style="color: #fff;">VladDracula</p></a>
-            <a href="#"><p style="color: #fff;">LestatTheVamp</p></a>
-            <a href="#"><p style="color: #fff;">VanHelsing</p></a>
+            <li><a href="#"><p style="color: #fff;">LestatTheVamp</p></a></li>
+            <li><a href="#"><p style="color: #fff;">VanHelsing</p></a></li>
+          </ul>
           </div>
         </div>
         <a href="#"><div class="underline"></div></a>
          <div class="item">
           <div class="header">
-            <h3>Add</h3>
+            <h3 style="margin-left: 13%;">Add</h3>
             
           </div>
           <div class="content">
@@ -167,26 +173,26 @@
   cursor: pointer;
   color: white;
 }
-
+/* 
 .accordion .header a:focus {
   overflow: hidden;
   opacity:1;
 	background: linear-gradient(315deg, #f5d020 50%, #f53803 74%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
-}
+} */
 
 .accordion .header h3 {
   margin: 0;
   font-size: 29px;
-  margin-left: 6%;
+  margin-left: 0%;
 }
 
 
 .accordion .content{
   padding: 0 20px;
   font-size: 15px;
-  line-height: 20px;
+  line-height: 36px;
   max-height: 0;
   transition: all ease-in-out 0.2s;
   color: white;
@@ -194,7 +200,7 @@
 
 .accordion .item.open .content {
   padding: 20px;
-  max-height: 150px;
+  max-height: 200px;
 }
 
     :root {
@@ -203,6 +209,9 @@
   --border: ;
 }
 
+.content ul li{
+  color: green;
+}
 
 *,
 *:before,
@@ -365,12 +374,12 @@ background-image: linear-gradient(315deg, #2876f9 0%, #6d17cb 74%);
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: rgb(0, 0, 58);
+  background-color: rgb(0, 0, 29);
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
 }
- 
+/*  
 .sidenav a {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
@@ -378,11 +387,11 @@ background-image: linear-gradient(315deg, #2876f9 0%, #6d17cb 74%);
   color: #818181;
   display: block;
   transition: 0.3s;
-}
-
+} */
+/* 
 .sidenav a:hover {
   color: #f1f1f1;
-}
+} */
 
 ::selection { background-color: #C3CFE2; }
 
@@ -407,7 +416,7 @@ background-image: linear-gradient(315deg, #2876f9 0%, #6d17cb 74%);
   background: transparent; 
 }
 
-@media screen and (max-height: 450px) {
+@media screen and (max-height: auto) {
   .sidenav {padding-top: 15px;};
   .sidenav a {font-size: 18px;};
 }
