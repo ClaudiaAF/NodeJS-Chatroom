@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ClaudiaAF/NodeJS-Chatroom#readme",
   "dependencies": {
-    "es6-template-strings": "^2.0.1"
+    "es6-template-strings": "^2.0.1",
+    "socket.io": "^2.3.0"
   }
 }
