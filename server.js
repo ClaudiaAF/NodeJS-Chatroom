@@ -4,18 +4,18 @@ const server = http.createServer();
 const fs = require('fs')
 const template = require ('es6-template-strings');
 const loggedInUsers = []
-var databaseOfUsers = [
-    {
-      username: "Claudia",
-      password: "123"
-    }
-  ]
 var bodyString = '';
 
 var io = require('socket.io')(server) 
 
 io.on('connection', (socket) => {
   console.log("a user has connected")
+  io.emit("clientConnected", "you have succesfully connected to the server")
+
+  socket.on('chatroom', (msg) => {
+    console.log(`this was a message from chat room: ${msg}`)
+    io.emit('chatroom', msg) 
+  })
 })
 
 
@@ -98,7 +98,6 @@ var handleFormGet = function(request, response) {
         if (err) { throw err }
         var values ={
             username: post['username'], 
-            surname: post['surname'] 
         }
             ;
 
@@ -106,7 +105,7 @@ var handleFormGet = function(request, response) {
         response.write(compiled);
         response.end();
          })
-    });
+        })
 };
 
 var handleLoginPost = (request, response) => {
@@ -121,50 +120,32 @@ var handleLoginPost = (request, response) => {
     request.on('end', function () {
     var post = queryString.parse(bodyString);
     loggedInUsers.push(post)
-
-    for (dbUser of databaseOfUsers){
-      if (dbUser.username === post.username && dbUser.password === post.password) {
-        response.writeHead(200, {"Content-Type": "text/html"});
+    response.writeHead(200, {"Content-Type": "text/html"});
     fs.readFile('template/dashboard.html', 'utf8', (err, data) => {
         if (err) { throw err }
         var values ={
             username: post['username'],
             loggedUsers:listLoginUsers(loggedInUsers)
         }
-            ;
-
         var compiled = template(data, values)
         response.write(compiled);
         response.end();
-         })
-    } 
+      });
     
-    }
-    response.writeHead(200, {"Content-Type": "text/html"});
-    fs.readFile('template/404.html', 'utf8', (err, data) => {
-        if (err) { throw err }
-        var values ={
-            username: post['username'],
-        }
-            ;
-
-        var compiled = template(data, values)
-        response.write(compiled);
-        response.end();
-         })
-  });
+    });
 }
+    // response.writeHead(200, {"Content-Type": "text/html"});
+    // fs.readFile('template/404.html', 'utf8', (err, data) => {
+    //     if (err) { throw err }
+    //     var values ={
+    //         username: post['username'],
+    //   }
+    //     var compiled = template(data, values)
+    //     response.write(compiled);
+    //     response.end();
+    //   })
+    // }
     
-
-
-const loginFunction = (database, user) => {
-  for (dbUser of database){
-    if (dbUser.username === user.username && dbUser.password === user.password) {
-      return route.handler;
-  }
-  
-}
-}
 
 const listLoginUsers = (loggedUsers) => {
   var list = ''

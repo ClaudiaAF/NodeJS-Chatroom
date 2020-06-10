@@ -52,20 +52,40 @@
     <div class="container">
       <div class="row">
         <div class="messages rounded-sm col-md-6">
-          <ul id="messages">
+          <div id="messageList">
   
-          </ul>
+          </div>
         </div>
   
       </div>
-      <form class="form-inline" onsubmit="event.preventDefault(); sendMsg();">
+      <form class="form-inline" onsubmit="event.preventDefault();">
         <div class="form-group mb-2">
           <input type="text" class="form-control" id="message" placeholder="Enter your message">
         </div>
-        <button type="submit" class="btn btn-primary submit-btn mb-2" >Send</button>
+        <button class="btn btn-primary submit-btn mb-2" onclick="sendMsg();">Send</button>
       </form>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+      const socket = io('http://localhost:8080', {transports: ['websocket']});
+      socket.on('clientConnected', function(msg){
+        console.log(msg);
+        var messageElement = document.createElement('li')
+        messageElement.textContent = msg
+        var messageBox  = document.getElementById('messageList').appendChild(messageElement)
+      }) 
 
+      socket.on('chatroom', (msg) => {
+        var messageElement = document.createElement('li')
+        messageElement.textContent = msg
+        var messageBox  = document.getElementById('messageList').appendChild(messageElement)
+      })
+
+      function sendMsg(){
+        var message = document.getElementById('message').value
+        socket.emit('chatroom', message)
+      }
+    </script>
     
     
   </body>
