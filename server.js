@@ -3,9 +3,21 @@ const queryString = require('querystring');
 const server = http.createServer();
 const fs = require('fs')
 const template = require ('es6-template-strings');
-const contacts = []
-
+const loggedInUsers = []
+var databaseOfUsers = [
+    {
+      username: "Claudia",
+      password: "123"
+    }
+  ]
 var bodyString = '';
+
+var io = require('socket.io')(server) 
+
+io.on('connection', (socket) => {
+  console.log("a user has connected")
+})
+
 
 var simpleRouter = (request) => {
     var method = request.method;
@@ -18,7 +30,10 @@ var simpleRouter = (request) => {
     var routes = [
         {method: 'GET', path: '/', handler: handleFormGet},
         {method: 'POST', path: '/', handler: handleFormPost},
-        {method: 'GET', path: '/profile', handler: handleLoginGet}
+        {method: 'GET', path: '/profile', handler: handleProfileGet},
+        {method: 'GET', path: '/log-in', handler: handleLoginGet},
+        {method: 'POST', path: '/log-in', handler: handleLoginPost},
+        {method: 'GET', path: '/chat', handler: handleChatGet}
     ];
     for (let i = 0; i < routes.length; i++) {
         var route = routes[i]
@@ -39,7 +54,7 @@ var handleFormGet = function(request, response) {
     });
   };
 
-  var handleLoginGet = function(request, response) {
+  var handleProfileGet = function(request, response) {
     response.writeHead(200, {"Content-Type": "text/html"});
     fs.readFile('template/profile.html', 'utf8', function(err, data) {
       if (err) { throw err; }
@@ -48,7 +63,26 @@ var handleFormGet = function(request, response) {
     });
   };
 
-var handleFormPost = (request, response) => {
+  var handleLoginGet = function(request, response) {
+    response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/login.html', 'utf8', function(err, data) {
+      if (err) { throw err; }
+      response.write(data);
+      response.end(bodyString);
+    });
+  };
+
+  var handleChatGet = function(request, response) {
+    response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/dashboard.html', 'utf8', function(err, data) {
+      if (err) { throw err; }
+      response.write(data);
+      response.end(bodyString);
+    });
+  };
+
+
+  var handleFormPost = (request, response) => {
     
     response.writeHead(200, {"Content-Type": "text/html"});
     var bodyString = '';
@@ -60,7 +94,7 @@ var handleFormPost = (request, response) => {
     request.on('end', function () {
     var post = queryString.parse(bodyString);
     response.writeHead(200, {"Content-Type": "text/html"});
-    fs.readFile('template/contacts.html', 'utf8', (err, data) => {
+    fs.readFile('template/dashboard.html', 'utf8', (err, data) => {
         if (err) { throw err }
         var values ={
             username: post['username'], 
@@ -74,6 +108,74 @@ var handleFormPost = (request, response) => {
          })
     });
 };
+
+var handleLoginPost = (request, response) => {
+    
+    response.writeHead(200, {"Content-Type": "text/html"});
+    var bodyString = '';
+    request.on('data', function (data) {
+    bodyString += data;
+
+    });
+
+    request.on('end', function () {
+    var post = queryString.parse(bodyString);
+    loggedInUsers.push(post)
+
+    for (dbUser of databaseOfUsers){
+      if (dbUser.username === post.username && dbUser.password === post.password) {
+        response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/dashboard.html', 'utf8', (err, data) => {
+        if (err) { throw err }
+        var values ={
+            username: post['username'],
+            loggedUsers:listLoginUsers(loggedInUsers)
+        }
+            ;
+
+        var compiled = template(data, values)
+        response.write(compiled);
+        response.end();
+         })
+    } 
+    
+    }
+    response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/404.html', 'utf8', (err, data) => {
+        if (err) { throw err }
+        var values ={
+            username: post['username'],
+        }
+            ;
+
+        var compiled = template(data, values)
+        response.write(compiled);
+        response.end();
+         })
+  });
+}
+    
+
+
+const loginFunction = (database, user) => {
+  for (dbUser of database){
+    if (dbUser.username === user.username && dbUser.password === user.password) {
+      return route.handler;
+  }
+  
+}
+}
+
+const listLoginUsers = (loggedUsers) => {
+  var list = ''
+  for (user of loggedInUsers){
+    list += `<li>
+      <p>${user.username}<p>
+      <p>4 hours</p>
+      </li>`
+      }
+      return list
+}
 
    
    server.on("request", function(request, response) {
@@ -90,95 +192,3 @@ var handleFormPost = (request, response) => {
 server.listen(8080, function (){
     console.log('listening on port 8080...')
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const fs = require('fs');
-// const template = require ('es6-template-strings');
-// var contacts = []
-
-// var handleFormGet = function(request, response) {
-//  response.writeHead(200, {"Content-Type": "text/html"});
-//  fs.readFile('template/form.html', 'utf8', function(err, data){
-//    if (err) { throw err; }
-//    response.write(data)
-//    response.end(); 
-//  })
-// };
-
-// var handleFormPost = function(request, response){
-
-//   var bodyString = '';
-//   request.on('data', (data) => {
-//     console.log('Data ${data}')
-//     bodyString += data;
-//     console.log ('Body: ${bodyString}')
-//   });
-
-//   request.on ('end', function() {
-//     console.log('END: ${bodyString}')
-//     var post = queryString.parse(bodyString);
-//     response.writeHead(200, {"Content-Type": "text/html"});
-//     fs.readFile('template/contacts.html', 'utf8', (err, data) => {
-//       if (err) { throw err }
-//       var values = {
-//         username: post ['username'],
-//         lastName: post ['lastName']
-//       }
-//       var compiled = template(data, values);
-//       response.write(compiled);
-//       response.end()
-//     })  
-//   });
-
-// }
-
-
-// server.on("request", function(request, response) {
-//   if ('GET' === request.method) {
-//     handleFormGet(request, response);
-//   } else if ('POST' === request.method) {
-//     handleFormPost(response, request);
-//   } else {
-//   response.writeHead(404);
-//   response.end();
-//   }
-
-// });
-
-
-// server.listen(8888, function(){
-//   console.log('Listening on port 8888...');
-//  });
-
-
-
-// <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-// <script src="/index.js"></script>
-     

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Document</title>
+   
+    <style>
+      .messages {
+        height: 500px;
+        background-color: rgb(216, 216, 216);
+        margin: 50px 0px 20px 0px;
+      }
+  
+      #messages {
+        list-style: none;
+        display: block;
+        padding: 0px;
+      }
+  
+      .message {
+        background-color: #e90052;
+        color: #fff;
+        padding: 10px;
+        margin-bottom: 5px;
+      }
+  
+      .submit-btn {
+        margin-left: 10px;
+      }
+  
+    </style>
+  </head>
+  
+  <body class="template">
+    <nav class="navbar navbar-light bg-light">
+        <div class="container">
+          <span class="navbar-brand mb-0 h1">Chat Room</span>
+        </div>
+    
+      </nav>
+
+    <div class="container">
+        <h3>Hi ${username}</h3>
+        <h2>ONLINE</h2>
+        <ul style="list-style: none;"> ${loggedUsers}</ul>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="messages rounded-sm col-md-6">
+          <ul id="messages">
+  
+          </ul>
+        </div>
+  
+      </div>
+      <form class="form-inline" onsubmit="event.preventDefault(); sendMsg();">
+        <div class="form-group mb-2">
+          <input type="text" class="form-control" id="message" placeholder="Enter your message">
+        </div>
+        <button type="submit" class="btn btn-primary submit-btn mb-2" >Send</button>
+      </form>
+    </div>
+
+    
+    
+  </body>
+</html>
