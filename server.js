@@ -1,113 +1,184 @@
-var http = require('http'); // Require the HTTP module that ships with node
-var queryString = require('querystring'); // Require the querystring module to get access to the query information
-var fs =  require('fs'); // Require the FS module to get access to the file system.
-var template = require('es6-template-stringses6-template-strings'); //Require our newly installed module that will insert the data into the html file
+const http = require('http');
+const queryString = require('querystring');
+const server = http.createServer();
+const fs = require('fs')
+const template = require ('es6-template-strings');
+const contacts = []
 
-var contacts = []; // We can use this contacts variable to store all of the contacts that connected to the chat
+var bodyString = '';
 
-var server = http.createServer(simpleRouter); // Abstract away the server method for refactoring purposes
-var io = require('socket.io')(server); 
-
-
-io.on('connection', function(socket){
-  console.log('a user connected');
-  io.emit("clientConnected", "you have successfully connected to the chat server")
-
-  socket.on('chatroom', function(msg){
-    console.log(`This was the message that was sent ${msg}`)
-    var emoji = "&#128540";
-    var res = msg.replace(":)", emoji)
-    io.emit('chatroom', res);
-  });
-
-  socket.on('broadcast', function(msg){
-    console.log(`This was the message that was sent ${msg}`)
-    socket.broadcast.emit('broadcast', 'Thank you for your message');
-  })
-});
-
-var simpleRouter = function(request) {
-  var method = request.method;
-  var path = request.url;
-
-  // Strip the query from the ? character
-  var queryIndex = request.url.indexOf('?');
-  if (queryIndex >= 0) {
-    path = request.url.slice(0, queryIndex)
-  }
-
-  var suppliedRoute = {method: method, path: path}
-  var routes = [
-    {method: 'GET', path: '/', handler: handleFormGet},
-    {method: 'GET', path: '/socket.io.js', handler: handleSocketGet},
-    {method: 'POST', path: '/', handler: handleFormPost}
-  ];
-
-  // Match the supplied route with the route visited and call the respective handler
-  for (var i = 0; i < routes.length; i++) {
-    var route = routes[i];
-    if ( route.method === suppliedRoute.method &&
-      route.path === suppliedRoute.path ) {
-      return route.handler;
+var simpleRouter = (request) => {
+    var method = request.method;
+    var path = request.url;
+    var queryIndex = request.url.indexOf('?');
+    if (queryIndex > 0) {
+        path = request.url.slice(0, queryIndex)
     }
-  }
-  return null;
+    var suppliedRoute = {method: method, path: path};
+    var routes = [
+        {method: 'GET', path: '/', handler: handleFormGet},
+        {method: 'POST', path: '/', handler: handleFormPost},
+        {method: 'GET', path: '/profile', handler: handleLoginGet}
+    ];
+    for (let i = 0; i < routes.length; i++) {
+        var route = routes[i]
+        if (route.method === suppliedRoute.method && route.path === suppliedRoute.path) {
+            return route.handler;
+        }
+    }
+    return null;
 }
 
-// A function to handle the GET Requests
+
 var handleFormGet = function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  fs.readFile('templates/form.html', 'utf8', function(err, data) {
-    if (err) { throw err; }
-    response.write(data);
-    response.end();
-  });
-}
-
-var handleSocketGet = function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  fs.readFile('js/socket.js', 'utf8', function(err, data) {
-    if (err) { throw err; }
-    response.write(data);
-    response.end();
-  });
-}
-
-// A function to handle the POST Requests
-var handleFormPost = function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  var payload = '';
-
-  request.on('data', function (data) {
-    payload += data;
-  });
-
-  request.on('end', function () {
-    var post = queryString.parse(payload);
-    contacts.push(post['username']);
     response.writeHead(200, {"Content-Type": "text/html"});
-    fs.readFile('templates/contacts.html', 'utf8', function(err, data) {
+    fs.readFile('template/form.html', 'utf8', function(err, data) {
       if (err) { throw err; }
-      var compiled = template(data, {username: post['username'], userList: contacts.join(",")});
-      response.write(compiled);
-      response.end();
+      response.write(data);
+      response.end(bodyString);
     });
-  });
-}
+  };
 
+  var handleLoginGet = function(request, response) {
+    response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/profile.html', 'utf8', function(err, data) {
+      if (err) { throw err; }
+      response.write(data);
+      response.end(bodyString);
+    });
+  };
 
-// Call the 'on' method on the server to handle the incoming request
-server.on("request", function(request, response) {
-  var handler = simpleRouter(request);
-  if (handler != null) {
-    handler(request, response);
-  } else {
-    response.writeHead(404);
-    response.end();
-  }
+var handleFormPost = (request, response) => {
+    
+    response.writeHead(200, {"Content-Type": "text/html"});
+    var bodyString = '';
+    request.on('data', function (data) {
+    bodyString += data;
+
+    });
+
+    request.on('end', function () {
+    var post = queryString.parse(bodyString);
+    response.writeHead(200, {"Content-Type": "text/html"});
+    fs.readFile('template/contacts.html', 'utf8', (err, data) => {
+        if (err) { throw err }
+        var values ={
+            username: post['username'], 
+            surname: post['surname'] 
+        }
+            ;
+
+        var compiled = template(data, values)
+        response.write(compiled);
+        response.end();
+         })
+    });
+};
+
+   
+   server.on("request", function(request, response) {
+     var handler = simpleRouter(request)
+
+     if (handler != null) {
+         handler(request, response)
+     } else {
+         response.writeHead(404);
+         response.end();
+     }
+});
+    
+server.listen(8080, function (){
+    console.log('listening on port 8080...')
 })
 
-server.listen(8888, function() {
-  // Console Log this to indicate where the server started.
-  console.log('Listening on port 8888...')
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const fs = require('fs');
+// const template = require ('es6-template-strings');
+// var contacts = []
+
+// var handleFormGet = function(request, response) {
+//  response.writeHead(200, {"Content-Type": "text/html"});
+//  fs.readFile('template/form.html', 'utf8', function(err, data){
+//    if (err) { throw err; }
+//    response.write(data)
+//    response.end(); 
+//  })
+// };
+
+// var handleFormPost = function(request, response){
+
+//   var bodyString = '';
+//   request.on('data', (data) => {
+//     console.log('Data ${data}')
+//     bodyString += data;
+//     console.log ('Body: ${bodyString}')
+//   });
+
+//   request.on ('end', function() {
+//     console.log('END: ${bodyString}')
+//     var post = queryString.parse(bodyString);
+//     response.writeHead(200, {"Content-Type": "text/html"});
+//     fs.readFile('template/contacts.html', 'utf8', (err, data) => {
+//       if (err) { throw err }
+//       var values = {
+//         username: post ['username'],
+//         lastName: post ['lastName']
+//       }
+//       var compiled = template(data, values);
+//       response.write(compiled);
+//       response.end()
+//     })  
+//   });
+
+// }
+
+
+// server.on("request", function(request, response) {
+//   if ('GET' === request.method) {
+//     handleFormGet(request, response);
+//   } else if ('POST' === request.method) {
+//     handleFormPost(response, request);
+//   } else {
+//   response.writeHead(404);
+//   response.end();
+//   }
+
+// });
+
+
+// server.listen(8888, function(){
+//   console.log('Listening on port 8888...');
+//  });
+
+
+
+// <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+// <script src="/index.js"></script>
+     
