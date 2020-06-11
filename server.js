@@ -33,7 +33,7 @@ var simpleRouter = (request) => {
         {method: 'GET', path: '/', handler: handleFormGet},
         {method: 'POST', path: '/', handler: handleFormPost},
         {method: 'GET', path: '/log-in', handler: handleLoginGet},
-        {method: 'POST', path: '/chatroom', handler: handleLoginPost},
+        {method: 'POST', path: '/log-in', handler: handleLoginPost},
         {method: 'GET', path: '/chatroom', handler: handleChatGet}
     ];
     for (let i = 0; i < routes.length; i++) {
