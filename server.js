@@ -30,10 +30,11 @@ var simpleRouter = (request) => {
     var routes = [
         {method: 'GET', path: '/', handler: handleFormGet},
         {method: 'POST', path: '/', handler: handleFormPost},
-        {method: 'GET', path: '/profile', handler: handleProfileGet},
+        {method: 'GET', path: '/', handler: handleFormGet},
+        {method: 'POST', path: '/', handler: handleFormPost},
         {method: 'GET', path: '/log-in', handler: handleLoginGet},
-        {method: 'POST', path: '/log-in', handler: handleLoginPost},
-        {method: 'GET', path: '/chat', handler: handleChatGet}
+        {method: 'POST', path: '/chatroom', handler: handleLoginPost},
+        {method: 'GET', path: '/chatroom', handler: handleChatGet}
     ];
     for (let i = 0; i < routes.length; i++) {
         var route = routes[i]
@@ -80,7 +81,6 @@ var handleFormGet = function(request, response) {
       response.end(bodyString);
     });
   };
-
 
   var handleFormPost = (request, response) => {
     
@@ -134,6 +134,33 @@ var handleLoginPost = (request, response) => {
     
     });
 }
+
+var handleNavigationPost = (request, response) => {
+    
+  response.writeHead(200, {"Content-Type": "text/html"});
+  var bodyString = '';
+  request.on('data', function (data) {
+  bodyString += data;
+
+  });
+
+  request.on('end', function () {
+  var post = queryString.parse(bodyString);
+  loggedInUsers.push(post)
+  response.writeHead(200, {"Content-Type": "text/html"});
+  fs.readFile('template/chat2.html', 'utf8', (err, data) => {
+      if (err) { throw err }
+      var values ={
+          username: post['username'],
+          loggedUsers:listLoginUsers(loggedInUsers)
+      }
+      var compiled = template(data, values)
+      response.write(compiled);
+      response.end();
+    });
+  
+  });
+}
     // response.writeHead(200, {"Content-Type": "text/html"});
     // fs.readFile('template/404.html', 'utf8', (err, data) => {
     //     if (err) { throw err }
@@ -150,10 +177,7 @@ var handleLoginPost = (request, response) => {
 const listLoginUsers = (loggedUsers) => {
   var list = ''
   for (user of loggedInUsers){
-    list += `<li>
-      <p>${user.username}<p>
-      <p>4 hours</p>
-      </li>`
+    list += `<p style="padding-left: 7%;">${user.username}<p>`
       }
       return list
 }
